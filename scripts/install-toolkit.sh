@@ -1,11 +1,49 @@
 #!/usr/bin/env bash
 # AI Engineer Toolkit — install/bind without cloning the full repo (remote) or from local clone.
 
-set -euo pipefail
+# Note: avoid `set -u` until common.sh is loaded (BASH_SOURCE is unset under curl | bash).
+set -eo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/common.sh
-source "${SCRIPT_DIR}/lib/common.sh"
+AI_TOOLKIT_REPO="${AI_TOOLKIT_REPO:-devalexanderdaza/ai_engineer_toolkit}"
+AI_TOOLKIT_REF="${AI_TOOLKIT_REF:-develop}"
+_AITK_RAW_BASE="https://raw.githubusercontent.com/${AI_TOOLKIT_REPO}/${AI_TOOLKIT_REF}"
+
+_aitk_bootstrap_fetch() {
+  local rel="$1" dest="$2"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "${_AITK_RAW_BASE}/${rel}" -o "$dest"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -qO "$dest" "${_AITK_RAW_BASE}/${rel}"
+  else
+    echo "[ERROR] curl or wget required for remote install" >&2
+    return 1
+  fi
+}
+
+SCRIPT_DIR=""
+_script_path="${BASH_SOURCE[0]:-}"
+if [[ -n "$_script_path" && "$_script_path" != bash && -f "$_script_path" ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "$_script_path")" && pwd)"
+  if [[ -f "${SCRIPT_DIR}/lib/common.sh" ]]; then
+    # shellcheck source=lib/common.sh
+    source "${SCRIPT_DIR}/lib/common.sh"
+  else
+    SCRIPT_DIR=""
+  fi
+fi
+if [[ -z "$SCRIPT_DIR" ]] || ! declare -F resolve_toolkit_root >/dev/null 2>&1; then
+  _aitk_common_tmp="$(mktemp)"
+  if ! _aitk_bootstrap_fetch "scripts/lib/common.sh" "$_aitk_common_tmp"; then
+    rm -f "$_aitk_common_tmp"
+    exit 1
+  fi
+  # shellcheck source=/dev/null
+  source "$_aitk_common_tmp"
+  rm -f "$_aitk_common_tmp"
+  SCRIPT_DIR=""
+fi
+unset _script_path _aitk_common_tmp
+set -u
 
 usage() {
   cat <<'EOF'
@@ -65,8 +103,13 @@ fi
 
 resolve_toolkit_root "$SCRIPT_DIR"
 
-if [[ -d "${TOOLKIT_ROOT}/project_templates" ]]; then
+if [[ "${REMOTE_ONLY:-0}" -eq 0 && -d "${TOOLKIT_ROOT}/project_templates" ]]; then
   USE_LOCAL=1
+fi
+
+if [[ $USE_LOCAL -eq 1 && "${REMOTE_ONLY:-0}" -eq 1 ]]; then
+  log_warn "--local ignored: running remote install (curl | bash)"
+  USE_LOCAL=0
 fi
 
 if [[ "$MODE" == "greenfield" ]]; then

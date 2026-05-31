@@ -7,28 +7,31 @@ AI_TOOLKIT_REPO="${AI_TOOLKIT_REPO:-devalexanderdaza/ai_engineer_toolkit}"
 AI_TOOLKIT_REF="${AI_TOOLKIT_REF:-develop}"
 RAW_BASE="https://raw.githubusercontent.com/${AI_TOOLKIT_REPO}/${AI_TOOLKIT_REF}"
 
-# Resolve toolkit root from caller script location if not set.
+# True only when running from a toolkit clone (not curl | bash in a random project cwd).
+is_toolkit_scripts_dir() {
+  local script_dir="${1:-}"
+  [[ -n "$script_dir" ]] \
+    && [[ -f "${script_dir}/lib/common.sh" ]] \
+    && [[ -d "${script_dir}/../project_templates" ]]
+}
+
+# Resolve toolkit root: local clone vs remote (piped) install.
 resolve_toolkit_root() {
-  if [[ -n "${TOOLKIT_ROOT:-}" && -d "${TOOLKIT_ROOT}/project_templates" ]]; then
+  local script_dir="${1:-}"
+
+  if [[ -n "${TOOLKIT_ROOT:-}" && -d "${TOOLKIT_ROOT}/project_templates" && "${REMOTE_ONLY:-0}" -eq 0 ]]; then
     export REMOTE_ONLY=0
     return 0
   fi
-  local script_dir="${1:-}"
-  if [[ -n "$script_dir" && "$(basename "$script_dir")" == "scripts" ]]; then
+
+  if is_toolkit_scripts_dir "$script_dir"; then
     TOOLKIT_ROOT="$(cd "$script_dir/.." && pwd)"
-  elif [[ -n "$script_dir" && "$(basename "$script_dir")" == "lib" ]]; then
-    TOOLKIT_ROOT="$(cd "$script_dir/../.." && pwd)"
-  elif [[ -n "$script_dir" ]]; then
-    TOOLKIT_ROOT="$(cd "$script_dir" && pwd)"
-  else
-    TOOLKIT_ROOT="$(pwd)"
-  fi
-  if [[ -d "${TOOLKIT_ROOT}/project_templates" ]]; then
     export REMOTE_ONLY=0
     export TOOLKIT_ROOT
     return 0
   fi
-  # Piped install (curl | bash): fetch from GitHub raw
+
+  # curl | bash: no on-disk script path — always fetch templates from GitHub
   export REMOTE_ONLY=1
   TOOLKIT_ROOT="${TOOLKIT_CACHE:-$(mktemp -d -t ai-toolkit-XXXXXX)}"
   export TOOLKIT_ROOT
