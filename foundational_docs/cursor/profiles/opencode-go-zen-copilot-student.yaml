@@ -1,0 +1,48 @@
+profile_id: opencode-go-zen-copilot-student
+version: "1.0"
+description: OpenCode Go daily; Zen for heavy; Copilot Student in IDE; BYOK optional.
+
+primary_host: opencode
+secondary_hosts: [cursor, vscode-copilot]
+
+budget_policy:
+  id: student_plus_go
+  rules:
+    - default_tier: fast
+    - zen_heavy_requires: user_confirm_or_mode_quality
+    - copilot_student: ide_chat_when_quota_ok
+
+tiers:
+  fast:
+    candidates:
+      - { provider: opencode-go, model: deepseek-v4-flash, priority: 1 }
+      - { provider: opencode-go, model: minimax-m2.5, priority: 2 }
+    selection: cheapest_available_with_quota
+  medium:
+    candidates:
+      - { provider: opencode-go, model: kimi-k2.6, priority: 1 }
+      - { provider: opencode-go, model: deepseek-v4-pro, priority: 2 }
+    selection: first_available
+  heavy:
+    candidates:
+      - { provider: opencode-go, model: deepseek-v4-pro, priority: 1 }
+      - { provider: opencode-zen, model: catalog_best_match, priority: 2 }
+    requires: user_confirm_or_mode_quality
+
+modes:
+  budget: { default_tier: fast, zen_allowed: false }
+  normal: { default_tier: medium, zen_heavy: on_confirm }
+  quality: { default_tier: medium, zen_heavy: allowed }
+  deep: { default_tier: heavy, composite_split: "explore@fast then execute@heavy" }
+
+discovery:
+  refresh: on_session_start
+  validate: "doctor --runtime"
+
+fallback:
+  on_quota_exceeded: downgrade_tier
+  on_model_missing: next_candidate
+
+router_config:
+  logical_file: .ai_engineer_toolkit/model_router_tiers.logical.json
+  plugin: opencode-model-router

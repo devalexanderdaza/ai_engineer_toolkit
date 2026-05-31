@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Engram Memory Schema",
+  "description": "Esquema para las observaciones almacenadas en Engram.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "ID único de la observación."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Marca de tiempo de la observación."
+    },
+    "project": {
+      "type": "string",
+      "description": "Nombre del proyecto al que pertenece la observación."
+    },
+    "type": {
+      "type": "string",
+      "description": "Tipo de observación (ej. 'arquitectura', 'decision', 'bugfix')."
+    },
+    "title": {
+      "type": "string",
+      "description": "Título conciso de la observación."
+    },
+    "content": {
+      "type": "string",
+      "description": "Contenido detallado de la observación."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Etiquetas asociadas a la observación."
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "tool": {
+          "type": "string",
+          "description": "Herramienta que generó la observación."
+        },
+        "command": {
+          "type": "string",
+          "description": "Comando o acción específica."
+        }
+      },
+      "description": "Información sobre la fuente de la observación."
+    }
+  },
+  "required": ["id", "timestamp", "project", "type", "title", "content"]
+}

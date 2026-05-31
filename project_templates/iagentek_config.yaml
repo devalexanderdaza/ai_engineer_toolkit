@@ -1,0 +1,16 @@
+version: 0.1.0
+projectName: "{{project_name}}"
+provider:
+  id: claude-cli
+  model: claude-opus-4-7
+flow: greenfield
+mode: autonomous-with-checkpoints
+checkpoints:
+  discovery-approved: auto
+  specs-approved: auto
+  architecture-approved: auto
+  planning-approved: auto
+  story-done: auto
+  qa-approved: auto
+  release-approved: auto
+lang: es

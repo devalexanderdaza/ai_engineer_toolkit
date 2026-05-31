@@ -1,0 +1,8 @@
+{
+  "ai_first": {
+    "enabled": true,
+    "auto_init": true,
+    "context_output_path": "ai-context/",
+    "mcp_server_enabled": true
+  }
+}

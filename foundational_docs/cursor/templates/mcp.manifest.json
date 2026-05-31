@@ -1,0 +1,32 @@
+{
+  "$comment": "Plantilla — sustituir <host> y rutas segun research/04_host_matrix.md",
+  "version": "0.1.0",
+  "project": "{{project_name}}",
+  "servers": {
+    "engram": {
+      "command": "engram",
+      "args": ["mcp", "--project", "{{project_name}}"],
+      "env": { "ENGRAM_DATA_DIR": "${workspaceFolder}/.engram" },
+      "lifecycle": "SESSION_RUNTIME",
+      "started_by": "host"
+    },
+    "ai-first": {
+      "command": "af",
+      "args": ["mcp"],
+      "lifecycle": "SESSION_RUNTIME",
+      "note": "Verificar comando exacto en upstream ai-first"
+    },
+    "graphify": {
+      "command": "graphify",
+      "args": ["mcp"],
+      "optional": true,
+      "lifecycle": "SESSION_RUNTIME"
+    },
+    "context-mode": {
+      "note": "Hooks instalados por host_bind; MCP segun context-mode install",
+      "lifecycle": "HOST_BIND + SESSION_RUNTIME"
+    }
+  },
+  "minimal_viable": ["engram", "ai-first"],
+  "full_stack": ["engram", "ai-first", "graphify", "context-mode"]
+}

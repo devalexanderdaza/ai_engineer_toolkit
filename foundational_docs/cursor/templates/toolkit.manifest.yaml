@@ -1,0 +1,87 @@
+# AI Engineer Toolkit — manifest de herramientas (referencia)
+# version: 0.1.0-cursor
+
+tools:
+  ai-first:
+    scopes: [GLOBAL_INSTALL, HOST_BIND, PROJECT_BIND, SESSION_RUNTIME]
+    global:
+      check: "command -v af || npx ai-first --version"
+    host_bind:
+      opencode: "af mcp install --profile opencode"
+      cursor: "af mcp install --profile cursor"
+    project_bind:
+      cmd: "af init"
+      outputs: ["ai-context/"]
+      skip_if: "ai-context/context_manifest.json exists and af doctor context passes"
+      force_flag: "--force"
+    runtime:
+      mcp: stdio
+      started_by: host
+
+  graphify:
+    scopes: [GLOBAL_INSTALL, HOST_BIND, PROJECT_BIND, SESSION_RUNTIME]
+    global:
+      check: "command -v graphify"
+      install_hint: "uv tool install graphifyy || pipx install graphifyy"
+    host_bind:
+      cmd: "graphify install --platform <host>"
+    project_bind:
+      cmd: "graphify . --project"
+      outputs: ["graphify-out/"]
+      force_flag: "--update"
+
+  engram:
+    scopes: [GLOBAL_INSTALL, HOST_BIND, PROJECT_BIND, SESSION_RUNTIME]
+    global:
+      check: "command -v engram"
+      install_hint: "brew install gentleman-programming/tap/engram"
+    host_bind:
+      opencode: "engram setup opencode"
+      cursor: "engram setup cursor"
+    project_bind:
+      env: "ENGRAM_DATA_DIR=<repo>/.engram"
+    runtime:
+      mcp: "engram mcp"
+      started_by: host
+      note: "Restart IDE after binary upgrade; no background in init scripts"
+
+  context-mode:
+    scopes: [GLOBAL_INSTALL, HOST_BIND, SESSION_RUNTIME]
+    global:
+      check: "command -v context-mode"
+    host_bind:
+      opencode: "context-mode opencode install"
+    runtime:
+      hooks: [PreToolUse, PostToolUse, PreCompact, SessionStart]
+
+  opencode-model-router:
+    scopes: [HOST_BIND, PROJECT_BIND]
+    project_bind:
+      outputs: [".ai_engineer_toolkit/model_router_tiers.logical.json", "capability_profile.yaml"]
+
+  agentsmith:
+    scopes: [GLOBAL_INSTALL, PROJECT_BIND]
+    project_bind:
+      cmd: "npx agentsmith assimilate ."
+      outputs:
+        - ".github/copilot-instructions.md"
+        - ".github/agents/"
+        - ".github/copilot/handoffs.json"
+        - ".github/skills/"
+      requires: "GitHub Copilot + gh auth for SDK"
+
+  iagentek:
+    scopes: [GLOBAL_INSTALL, PROJECT_BIND]
+    layer: L3
+
+  sprintpilot:
+    scopes: [GLOBAL_INSTALL, HOST_BIND, PROJECT_BIND]
+    host_bind:
+      cmd: "npx @ikunin/sprintpilot install --tools <hosts>"
+    layer: L3
+
+phases:
+  - { id: bootstrap-global, doctor: --global }
+  - { id: bind-host, doctor: --host }
+  - { id: bind-project, doctor: --project }
+  - { id: session, doctor: --runtime }
