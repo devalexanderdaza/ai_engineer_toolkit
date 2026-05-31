@@ -37,14 +37,16 @@
 | `AGENTS.md` | Prompt unificado para agentes |
 | `specs/doctor.spec.md` | Contrato verificación |
 
-## Roadmap priorizado (implementación en raíz — PR futuro)
+## Roadmap priorizado (implementación en raíz)
 
-### P0 — Crítico
+### P0 — Crítico (completado en `feature/p0-installer-and-templates`)
 
-1. Actualizar `README.md` raíz → enlazar `foundational_docs/cursor/`.
-2. Sustituir `project_templates/model_router_tiers.json` por tiers lógicos + `capability_profile` template.
-3. `scripts/init-brownfield.sh` (Fases 0–2 idempotentes).
-4. `scripts/doctor.sh` o `doctor.py` (--global, --host, --project, --runtime).
+1. ~~Actualizar `README.md` raíz → enlazar `foundational_docs/cursor/`.~~ **Hecho**
+2. ~~Sustituir `project_templates/model_router_tiers.json` por tiers lógicos + `capability_profile` template.~~ **Hecho** (`model_router_tiers.logical.json`, `capability_profile.template.yaml`)
+3. ~~`scripts/init-brownfield.sh` (Fases 0–2 idempotentes).~~ **Hecho**
+4. ~~`scripts/doctor.sh` (--global, --host, --project, --runtime).~~ **Hecho v0.1**
+5. ~~`scripts/install-toolkit.sh` + `install/files.manifest` (remoto/local).~~ **Hecho**
+6. ~~`VERSION` + higiene legacy `foundational_docs/manus/`.~~ **Hecho**
 
 ### P1 — Alto valor
 

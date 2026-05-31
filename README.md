@@ -1,57 +1,113 @@
-# AI Engineer Toolkit: Integración de Herramientas para Proyectos de IA
+# AI Engineer Toolkit
 
-Este toolkit es una solución integrada diseñada para **AI Engineers** y **Arquitectos de AI/Software** que buscan optimizar la exploración, comprensión, desarrollo y mantenimiento de proyectos de software asistidos por inteligencia artificial. Combina las mejores características de varias herramientas líderes en el ecosistema de desarrollo de IA para proporcionar un entorno de trabajo coherente, eficiente y con "memoria".
+Toolkit integrado para **AI Engineers** y arquitectos: contexto verificable, memoria persistente, enrutamiento de modelos y orquestación de agentes en repos brownfield y greenfield.
 
-## Propósito
+**Documentación canónica:** [foundational_docs/cursor/](foundational_docs/cursor/)
 
-El objetivo principal de este toolkit es:
+| Recurso | Descripción |
+|---------|-------------|
+| [ARCHITECTURE.md](foundational_docs/cursor/ARCHITECTURE.md) | Capas L1/L2/L3 y runtime |
+| [LIFECYCLE_IDEMPOTENCY.md](foundational_docs/cursor/LIFECYCLE_IDEMPOTENCY.md) | Install-once vs bind vs sesión |
+| [INTEGRATION_SEQUENCE.md](foundational_docs/cursor/INTEGRATION_SEQUENCE.md) | Orden de integración por herramienta |
+| [AGENTS.md](foundational_docs/cursor/AGENTS.md) | Prompt unificado para agentes |
 
-1.  **Acelerar la comprensión de nuevos proyectos:** Generar rápidamente un contexto verificable y estructurado de cualquier repositorio.
-2.  **Mantener la memoria persistente:** Asegurar que los agentes de IA y los ingenieros humanos tengan acceso a un historial de decisiones, aprendizajes y observaciones.
-3.  **Optimizar el uso de recursos de IA:** Enrutar tareas a los modelos de IA más adecuados y rentables.
-4.  **Automatizar flujos de trabajo de desarrollo:** Orquestar equipos de agentes de IA para gestionar ciclos de desarrollo completos, desde la concepción hasta la implementación.
-5.  **Facilitar la colaboración y el traspaso de conocimiento:** Proporcionar artefactos claros y unificados que puedan ser compartidos entre agentes y equipos.
+Repositorio oficial: [github.com/devalexanderdaza/ai_engineer_toolkit](https://github.com/devalexanderdaza/ai_engineer_toolkit)
 
-## Componentes Integrados y sus Aportaciones
+## Quick start — brownfield (repo existente)
 
-| Componente Integrado | Herramienta Base | Aportación Clave al Toolkit |
-| :------------------- | :--------------- | :-------------------------- |
-| **Generación de Contexto Verificable** | AI-First | Proporciona una comprensión compacta y fiable del repositorio (`ai-context/`), incluyendo arquitectura, símbolos, dependencias y puertas de calidad. Esencial para la rápida incorporación a nuevos proyectos y para que los agentes operen con información precisa. |
-| **Memoria Persistente y Compartida** | Engram | Ofrece un "cerebro" duradero para los agentes de IA, almacenando observaciones, decisiones y aprendizajes en SQLite con FTS5. Permite la continuidad de la sesión y el traspaso de conocimiento entre agentes y a lo largo del tiempo. |
-| **Enrutamiento Inteligente de Modelos** | OpenCode Model Router | Optimiza el coste y la eficiencia al seleccionar automáticamente el modelo de IA más adecuado para cada tarea (ej. `@fast` para exploración, `@heavy` para arquitectura). Reduce el gasto en tokens y mejora la velocidad de ejecución. |
-| **Orquestación de Agentes y Flujos de Trabajo** | IAgentek Framework & Sprintpilot | Gestiona ciclos de desarrollo completos con equipos virtuales de agentes especializados (Analista, PM, Dev, QA, etc.) y automatiza flujos de trabajo Git (ramas, commits, PRs, revisiones). Permite la ejecución autónoma con puntos de control humanos. |
-| **Generación de Grafos de Conocimiento** | Graphify | Transforma código, documentos, PDFs, imágenes y videos en un grafo de conocimiento consultable. Facilita la exploración "query-first" y la comprensión profunda de las interconexiones del proyecto. |
-| **Optimización del Contexto del LLM** | Context Mode | Reduce drásticamente el uso de tokens al mantener los datos brutos fuera de la ventana de contexto del LLM y fomenta el enfoque de "pensar en código". Asegura la continuidad de la sesión y la recuperación de fallos. |
-| **Especialización y Delegación de Agentes** | Agent Smith CLI | Genera automáticamente constelaciones de agentes especializados y define grafos de delegación, adaptando los agentes a la estructura específica de cada repositorio. Mejora la eficiencia y la modularidad del trabajo de los agentes. |
+Desde la raíz de tu proyecto (sin clonar el toolkit):
 
-## Estructura del Toolkit
+```bash
+export AI_TOOLKIT_REF="${AI_TOOLKIT_REF:-develop}"
+
+curl -fsSL "https://raw.githubusercontent.com/devalexanderdaza/ai_engineer_toolkit/${AI_TOOLKIT_REF}/scripts/install-toolkit.sh" \
+  | bash -s -- bind --host cursor .
+```
+
+Luego fases globales y host (una vez por máquina/IDE):
+
+```bash
+./scripts/doctor.sh --global    # si clonaste el toolkit; o sigue INTEGRATION_SEQUENCE.md
+engram setup cursor
+af mcp install --profile cursor
+af init
+```
+
+## Quick start — local (clone del toolkit)
+
+```bash
+git clone https://github.com/devalexanderdaza/ai_engineer_toolkit.git
+cd ai_engineer_toolkit
+
+./scripts/install-toolkit.sh bind --local --host opencode /path/to/your/repo
+# o brownfield guiado:
+./scripts/init-brownfield.sh --host opencode --local /path/to/your/repo
+```
+
+## Quick start — greenfield
+
+```bash
+./scripts/install-toolkit.sh greenfield my-new-app --host cursor --local
+cd my-new-app
+# af init, engram setup, etc.
+```
+
+> **Legacy:** `python setup_project.py <name>` sigue disponible; preferir `install-toolkit.sh`.
+
+## Verificación
+
+```bash
+./scripts/doctor.sh --global
+./scripts/doctor.sh --host cursor --project
+```
+
+## Componentes integrados
+
+| Capa | Herramientas | Rol |
+|------|--------------|-----|
+| L1 | AI-First, Graphify, Agent Smith | Contexto, grafo, instructions Copilot/VS Code |
+| L2 | Engram, Context Mode, Model Router | Memoria, hooks, tiers lógicos |
+| L3 | Sprintpilot, IAgentek | SDD / sprints (opcional) |
+
+Los tiers de modelo usan `model_router_tiers.logical.json` + `capability_profile.yaml` (sin IDs Anthropic fijos). Ver [PROVIDER_CAPABILITY_MODEL.md](foundational_docs/cursor/PROVIDER_CAPABILITY_MODEL.md).
+
+## Estructura del repositorio
 
 ```
 ai_engineer_toolkit/
+├── VERSION
 ├── README.md
-├── setup_project.py           # Script de inicialización para nuevos proyectos
-├── project_templates/         # Plantillas de configuración para los componentes integrados
-│   ├── ai_first_config.json
-│   ├── engram_config.json
-│   ├── model_router_tiers.json
-│   ├── iagentek_config.yaml
-│   ├── sprintpilot_config.yaml
-│   ├── graphify_config.json
-│   └── agentsmith_config.json
-├── agents/                    # Configuraciones de agentes base y ejemplos de SKILL.md
-│   ├── base_agent.md
-│   └── example_skill.md
-├── memory/                    # Esquemas de memoria y ejemplos de uso de Engram
-│   └── memory_schema.json
-└── context/                   # Ejemplos de `ai-context/` y cómo interpretarlo
-    └── ai_context_example.md
+├── scripts/
+│   ├── install-toolkit.sh    # bind / greenfield (local o remoto)
+│   ├── init-brownfield.sh
+│   ├── doctor.sh
+│   └── lib/common.sh
+├── install/files.manifest
+├── project_templates/        # Plantillas → .ai_engineer_toolkit/
+├── foundational_docs/cursor/ # Fuente de verdad (investigación + contratos)
+├── agents/, memory/, context/ # Ejemplos de referencia
+└── setup_project.py          # Legacy greenfield
 ```
 
-## Cómo Usar el Toolkit
+## Contribuir (git-flow)
 
-1.  **Inicializar un Nuevo Proyecto:** Ejecuta `python setup_project.py <nombre_del_proyecto>` para configurar la estructura básica y los archivos de configuración iniciales.
-2.  **Generar Contexto Inicial:** Navega al directorio del proyecto y ejecuta `af init` para crear el `ai-context/` inicial.
-3.  **Configurar Agentes de IA:** Utiliza los comandos de instalación de cada herramienta (ej. `engram setup opencode`, `graphify install --platform opencode`) para integrar los componentes con tus asistentes de codificación AI preferidos.
-4.  **Comenzar a Trabajar:** Los agentes de IA ahora tendrán acceso a un contexto enriquecido, memoria persistente y enrutamiento inteligente de modelos para abordar las tareas de desarrollo.
+Este proyecto usa [git-flow-next](https://git-flow.sh/docs/about/):
 
-Este `README.md` será el punto de partida para cualquier nuevo proyecto, guiando tanto a los ingenieros humanos como a los agentes de IA a través de la configuración y el uso de las herramientas integradas.
+- `main` — producción
+- `develop` — integración
+- `feature/*` — trabajo nuevo desde `develop`
+
+```bash
+git checkout develop
+git flow feature start my-feature
+# ... commits (conventional commits en inglés)
+git flow feature finish my-feature
+git push origin develop
+```
+
+## Investigación histórica
+
+- [foundational_docs/manus/](foundational_docs/manus/) — investigación Manus.ai (archivo)
+- [foundational_docs/gemini/](foundational_docs/gemini/) — investigación Gemini (archivo)
+
+Versión del toolkit: ver [VERSION](VERSION).
