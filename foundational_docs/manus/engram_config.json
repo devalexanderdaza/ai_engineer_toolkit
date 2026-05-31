@@ -1,8 +1,0 @@
-{
-  "engram": {
-    "enabled": true,
-    "data_dir": ".engram/",
-    "mcp_server_enabled": true,
-    "cloud_sync_enabled": false
-  }
-}

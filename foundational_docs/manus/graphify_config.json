@@ -1,8 +1,0 @@
-{
-  "graphify": {
-    "enabled": true,
-    "output_dir": "graphify-out/",
-    "auto_build_on_change": true,
-    "default_query_first": true
-  }
-}

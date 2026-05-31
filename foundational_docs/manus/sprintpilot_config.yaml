@@ -1,7 +1,0 @@
-complexity_profile: medium
-autopilot:
-  session_story_limit: 3
-git:
-  merge_strategy: stacked
-  push:
-    create_pr: true

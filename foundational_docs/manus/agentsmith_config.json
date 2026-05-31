@@ -1,8 +1,0 @@
-{
-  "agentsmith": {
-    "enabled": true,
-    "output_dir": ".github/",
-    "single_agent_mode": false,
-    "assimilate_on_init": true
-  }
-}
