@@ -1,0 +1,34 @@
+profile_id: template
+version: "1.0"
+description: Copiar y rellenar tras discovery de modelos en tu host.
+
+primary_host: CHANGE_ME
+secondary_hosts: []
+
+budget_policy:
+  id: custom
+
+tiers:
+  fast:
+    candidates:
+      - { provider: CHANGE_ME, model: CHANGE_ME, priority: 1 }
+    selection: first_available
+  medium:
+    candidates:
+      - { provider: CHANGE_ME, model: CHANGE_ME, priority: 1 }
+    selection: first_available
+  heavy:
+    candidates:
+      - { provider: CHANGE_ME, model: CHANGE_ME, priority: 1 }
+    requires: user_confirm
+
+discovery:
+  refresh: on_session_start
+  notes: "Run doctor --runtime after editing"
+
+fallback:
+  on_model_missing: next_candidate
+  on_quota_exceeded: downgrade_tier
+
+router_config:
+  logical_file: .ai_engineer_toolkit/model_router_tiers.logical.json

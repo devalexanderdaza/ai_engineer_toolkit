@@ -1,0 +1,28 @@
+{
+  "activeMode": "normal",
+  "tierSemantics": {
+    "fast": { "costRatio": 1, "description": "Lectura, busqueda, metadata" },
+    "medium": { "costRatio": 5, "description": "Implementacion, refactors, tests" },
+    "heavy": { "costRatio": 20, "description": "Arquitectura, debug profundo" }
+  },
+  "taskPatterns": {
+    "fast": ["search/grep/read", "git-info/ls", "lookup-docs/types", "mem_search", "graph_query"],
+    "medium": ["impl-feature/refactor", "write-tests/bugfix-small", "build-fix", "mem_save"],
+    "heavy": ["arch-design", "sec-audit", "migrate-strategy", "sprint-orchestration"]
+  },
+  "modes": {
+    "normal": { "defaultTier": "medium" },
+    "budget": {
+      "defaultTier": "fast",
+      "overrideRules": ["default→@fast", "@heavy ONLY: user-requested OR ≥2 @medium failures"]
+    },
+    "quality": { "defaultTier": "medium", "overrideRules": ["@heavy for architecture"] },
+    "deep": {
+      "defaultTier": "heavy",
+      "overrideRules": ["composite: explore@fast then execute@heavy"]
+    }
+  },
+  "providerMapping": {
+    "_comment": "Usar capability_profile.yaml; ejemplos en profiles/ solo como referencia"
+  }
+}

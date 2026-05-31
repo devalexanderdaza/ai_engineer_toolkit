@@ -1,4 +1,5 @@
 {
+  "_deprecated": "Reemplazado por model_router_tiers.logical.json + capability_profile.yaml. Ver foundational_docs/cursor/PROVIDER_CAPABILITY_MODEL.md",
   "activePreset": "anthropic",
   "activeMode": "normal",
   "tierCaps": {
